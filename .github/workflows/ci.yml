@@ -1,0 +1,49 @@
+name: Infrastructure CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate docker-compose
+      run: |
+        docker-compose config > /dev/null
+        echo "✓ docker-compose.yml is valid"
+    
+    - name: Check .env.example
+      run: |
+        if [ ! -f .env.example ]; then
+          echo "Error: .env.example not found"
+          exit 1
+        fi
+        echo "✓ .env.example exists"
+    
+    - name: Validate JSON files
+      run: |
+        for file in seed/*.json; do
+          if [ -f "$file" ]; then
+            python3 -m json.tool "$file" > /dev/null
+            echo "✓ $file is valid JSON"
+          fi
+        done
+
+  docker-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build docker images
+      run: docker-compose build
+      continue-on-error: true

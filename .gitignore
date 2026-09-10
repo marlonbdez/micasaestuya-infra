@@ -1,0 +1,8 @@
+.DS_Store
+
+# Environment files — never commit secrets
+dev/docker/.env
+**/.env
+
+# User-specific shell config
+dev/docker/.zshrc

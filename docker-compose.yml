@@ -1,0 +1,77 @@
+services:
+  nuxt:
+    build:
+      context: ../web
+      dockerfile: Dockerfile.dev
+    container_name: nuxt
+    ports:
+      - "3000:3000"
+      - "24678:24678"
+    environment:
+      NUXT_PUBLIC_API_BASE: http://localhost:3001/api
+      SSH_AUTH_SOCK: /ssh-agent
+    volumes:
+      - ../web:/usr/src/app
+      - /usr/src/app/node_modules
+      - /run/host-services/ssh-auth.sock:/ssh-agent
+
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD:-example}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-micasaestuya-dev}
+    ports:
+      - 27017:27017
+    volumes:
+      - ./seed/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongo_data:/data/db
+
+  express:
+    build:
+      context: ../api
+      dockerfile: Dockerfile.dev
+    container_name: express
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      MONGODB_URI: ${MONGO_DB_URI:-mongodb://root:example@mongo:27017/micasaestuya-dev?authSource=admin}
+      MONGODB_TEST_URI: ${MONGO_DB_TEST_URI:-mongodb://root:example@mongo:27017/micasaestuya-test-dev?authSource=admin}
+      SECRET: ${SECRET:-secret}
+      DB_NAME: ${MONGO_DB_NAME:-micasaestuya-dev}
+      REDIS_URI: redis://redis:6379
+      REDIS_TEST_URI: redis://redis:6379/1
+      SSH_AUTH_SOCK: /ssh-agent
+    depends_on:
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../api:/usr/src/app
+      - /usr/src/app/node_modules
+      - /run/host-services/ssh-auth.sock:/ssh-agent
+    # Run the following to populate Redis with location data:
+    # docker exec express npm run redis:seed
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+volumes:
+  mongo_data: {}
+  redis_data: {}
