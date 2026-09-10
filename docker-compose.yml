@@ -1,7 +1,7 @@
 services:
   nuxt:
     build:
-      context: ../web
+      context: ../micasaestuya-web
       dockerfile: Dockerfile.dev
     container_name: nuxt
     ports:
@@ -11,7 +11,7 @@ services:
       NUXT_PUBLIC_API_BASE: http://localhost:3001/api
       SSH_AUTH_SOCK: /ssh-agent
     volumes:
-      - ../web:/usr/src/app
+      - ../micasaestuya-web:/usr/src/app
       - /usr/src/app/node_modules
       - /run/host-services/ssh-auth.sock:/ssh-agent
 
@@ -31,7 +31,7 @@ services:
 
   express:
     build:
-      context: ../api
+      context: ../micasaestuya-api
       dockerfile: Dockerfile.dev
     container_name: express
     ports:
@@ -52,7 +52,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ../api:/usr/src/app
+      - ../micasaestuya-api:/usr/src/app
       - /usr/src/app/node_modules
       - /run/host-services/ssh-auth.sock:/ssh-agent
     # Run the following to populate Redis with location data:

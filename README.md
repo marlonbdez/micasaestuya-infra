@@ -121,3 +121,66 @@ Use [MongoDB Compass](https://www.mongodb.com/products/tools/compass) to connect
 The `web` repo includes a `.devcontainer/devcontainer.json` that references this repo's `docker-compose.yml`, giving you the full stack automatically when opening the project as a Dev Container.
 
 **Requirement:** All repos must be cloned as siblings (see folder structure above).
+
+## 🚀 Quick Start with Docker Compose
+
+### Prerequisites
+- Docker & Docker Compose installed
+- Clone all three repos in the same parent directory:
+  ```
+  ~/Development/micasaestuya/
+  ├── micasaestuya-api/
+  ├── micasaestuya-web/
+  └── micasaestuya-infra/
+  ```
+
+### Start the Full Stack
+
+```bash
+cd micasaestuya-infra
+docker-compose up -d
+```
+
+This starts:
+- **Frontend**: http://localhost:3000 (Nuxt)
+- **API**: http://localhost:3001 (Express)
+- **MongoDB**: localhost:27017
+- **Redis**: localhost:6379
+
+### Useful Commands
+
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop everything
+docker-compose down
+
+# Stop and remove data
+docker-compose down -v
+
+# Restart a specific service
+docker-compose restart express
+
+# Seed Redis with location data
+docker exec express npm run redis:seed
+```
+
+### Troubleshooting
+
+**Port already in use?**
+```bash
+# Edit docker-compose.yml and change port numbers
+# Example: "3000:3000" → "3002:3000"
+```
+
+**Services won't start?**
+```bash
+docker-compose down -v  # Remove volumes and try again
+docker-compose up -d
+```
+
+**Check service status**
+```bash
+docker-compose ps
+```
