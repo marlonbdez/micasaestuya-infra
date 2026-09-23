@@ -1,5 +1,11 @@
 # infra — Agent Guide
 
+> **`CLAUDE.md` can't be centralized — it stays in this repo for technical
+> reasons** (coding tools read it automatically when working here). But
+> **the project's source of truth is `micasaestuya-docs`**: architecture,
+> decisions, product vision and anything business-related are written there,
+> never in a `CLAUDE.md`. This file is only this repo's code style guide.
+
 ## What's here
 
 Docker Compose dev environment for micasaestuya.com.
@@ -17,19 +23,21 @@ infra/
 
 ## Sibling repos
 
-Three independent git repos. A change touching two of them needs two commits,
-and **`api` goes first** whenever `web` depends on one of its endpoints.
+Four independent git repos, all on GitHub under `marlonbdez`. A change touching
+two of them needs two commits, and **`api` goes first** whenever `web` depends
+on one of its endpoints.
 
 ```
 micasaestuya/
-  api/     ← git@gitlab.com:micasaestuya/api.git
-  web/     ← git@gitlab.com:micasaestuya/web.git
-  infra/   ← this repo
+  micasaestuya-api/    ← github.com/marlonbdez/micasaestuya-api
+  micasaestuya-web/    ← github.com/marlonbdez/micasaestuya-web
+  micasaestuya-infra/  ← this repo
+  micasaestuya-docs/   ← architecture, ADRs, product vision, status — start here
 ```
 
-**The project docs live in `web/docs/`** — start with `web/docs/status.md`.
-Shared vocabulary (`region`, `address`, `locale`) is in `web/docs/regions.md`;
-CI and lint traps are in `web/docs/tooling.md`.
+**Everything cross-cutting lives in `micasaestuya-docs/`** — start with
+`product-vision.md`, then `status.md`. `web`-specific implementation detail is
+in `micasaestuya-web/docs/`; `api`-specific in `micasaestuya-api/docs/`.
 
 ## Local ports
 
