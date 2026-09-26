@@ -21,6 +21,11 @@ infra/
     regions_do.json    # Dominican Republic regions
 ```
 
+The region files in `seed/` (and the Mongo `regions` collection that
+`mongo-init.js` creates) predate the current design: the api does not use them.
+The source of truth for regions is `micasaestuya-api/data/` plus Redis. They are
+left here on purpose — don't "fix" them in passing.
+
 ## Sibling repos
 
 Four independent git repos, all on GitHub under `marlonbdez`. A change touching

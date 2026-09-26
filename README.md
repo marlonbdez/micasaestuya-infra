@@ -2,6 +2,10 @@
 
 Docker Compose dev environment for [micasaestuya.com](https://micasaestuya.com).
 
+The project's source of truth (product vision, architecture, decisions and
+current status) is the
+[`micasaestuya-docs`](https://github.com/marlonbdez/micasaestuya-docs) repo.
+
 ## Structure
 
 ```
@@ -63,7 +67,11 @@ micasaestuya/
   micasaestuya-api/     ← backend repo
   micasaestuya-web/     ← frontend repo
   micasaestuya-infra/   ← this repo
+  micasaestuya-docs/    ← documentation (source of truth)
 ```
+
+Docker Compose only mounts `api` and `web`, but every repo's `CLAUDE.md` points
+to `../micasaestuya-docs/`, so clone it next to the others too.
 
 ## Setup
 
@@ -74,6 +82,7 @@ mkdir micasaestuya && cd micasaestuya
 git clone git@github.com:marlonbdez/micasaestuya-api.git
 git clone git@github.com:marlonbdez/micasaestuya-web.git
 git clone git@github.com:marlonbdez/micasaestuya-infra.git
+git clone git@github.com:marlonbdez/micasaestuya-docs.git
 ```
 
 ### 2. Configure environment variables (optional)
@@ -101,7 +110,8 @@ This starts:
 
 ### 4. Seed Redis (first time only)
 
-Location autocomplete requires Redis to be populated:
+Location autocomplete requires Redis to be populated. The seed starts with a
+`flushdb`: it wipes Redis entirely before loading.
 
 ```bash
 docker exec express npm run redis:seed
